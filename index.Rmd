@@ -1,0 +1,526 @@
+---
+title       : "Research projects: Phylogenetics"
+subtitle    : "BIOL30001: Honours Research Project"
+author      : Dr Axel Barlow
+job         : "email: axel.barlow@ntu.ac.uk, office: IBRC115"
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : zenburn      # {zenburn, tomorrow, solarized-dark, ...}
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+logo        : ntu-shield.png
+biglogo     : NTU_open-graph.png
+assets      : {assets: ../../assets}
+license     : by-nc-sa
+github:
+  user: draxelbarlow
+  repo: project_students_phylogeny
+  branch: "gh-pages"
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(gganimate)
+library(RColorBrewer)
+library(knitr)
+library(ape)
+```
+
+<!-- adding bold and italic options -->
+<style>
+em {
+  font-style: italic
+}
+strong {
+  font-weight: bold;
+}
+</style>
+
+## Research projects: Phylogenetics
+
+- Population trees
+- Bayesian Phylogenetics
+- Molecular dating
+
+--- .class #id
+
+## Suggested reading
+
+```{r, out.width = "100%", out.height=500, dpi = 300, echo = FALSE}
+include_graphics("./assets/img/Baldauf - 2003 - Phylogeny for the faint of heart A tutorial.pdf")
+```
+
+--- .class #id
+
+## Suggested reading
+
+```{r, out.width = "100%", out.height=500, dpi = 300, echo = FALSE}
+include_graphics("./assets/img/Villanea, Kitchen, Kemp - 2019 - Applications of bayesian skyline plots and approximate bayesian computation for human demography.pdf")
+```
+
+--- .class #id
+
+## Suggested reading (Viral)
+
+```{r, out.width = "100%", out.height=500, dpi = 300, echo = FALSE}
+include_graphics("./assets/img/Dudas et al. - 2018 - MERS-CoV spillover at the camel-human interface.pdf")
+```
+
+--- .class #id
+
+## Suggested reading (mtDNA)
+
+```{r, out.width = "100%", out.height=500, dpi = 300, echo = FALSE}
+include_graphics("./assets/img/Fortes - 2016 - Ancient DNA reveals differences in behaviour and sociality between brown bears and extinct cave bears(2).pdf")
+```
+
+--- .segue .dark 
+
+## Population trees
+
+--- .class bg:white
+
+## Species trees
+
+- These are phylogenies of species
+- Each tip is a different, reproductively isolated species
+- Can be inferred from a variety of data types
+
+```{r, out.width = "40%", fig.width = 3, fig.height = 3, dpi = 600, fig.align = "center", echo = FALSE}
+
+my.tree1 <- read.tree(text="((((human,chimp),(cat,dog)),(snake,lizard)),fish);")
+par(mar=c(1,1,1,1))
+plot(my.tree1)
+```
+
+--- .class bg:white
+
+## Gene trees
+
+- These are phylogenies of individual loci (e.g. a gene)
+- Or related sets of loci (e.g. multigene families)
+- Each tip is a different allele (i.e. a gene variant)
+
+```{r, out.width = "60%", fig.width = 5, fig.height = 3, dpi = 600, fig.align = "center", echo = FALSE}
+
+my.tree2 <- read.tree(text="(((myoglobin_chimp,myoglobin_human),myoglobin_mouse),((haemoglobin_chimp,haemoglobin_human),haemoglobin_mouse));")
+par(mar=c(1,1,1,1))
+plot(my.tree2)
+```
+
+--- .class bg:white
+
+## Population-level trees
+
+- Each tip is an individual
+- Each node is their most recent ancestor (coalescence event)
+- Shows the relationships of individuals and populations
+
+```{r, out.width = "60%", fig.width = 5, fig.height = 3, dpi = 600, fig.align = "center", echo = FALSE}
+
+my.tree3 <- read.tree(text="((((individual1,individual2),individual3),((individual4,individual5),individual6)),individual7);")
+par(mar=c(1,1,1,1))
+plot(my.tree3)
+```
+
+--- .segue .dark 
+
+## How does that work?
+
+--- .class bg:white
+
+```{r, out.width = "95%", dpi = 300, echo = FALSE, fig.align='center'}
+include_graphics("./assets/img/mtDNA_tree.svg")
+```
+
+--- .class bg:white
+
+## Calculating population-level trees
+
+### We'll think about mitochondrial haplotypes (diploid loci 2x more complex)
+
+- Sequence variation provides phylogenetic information
+- Similar sequences are more closely related
+- Branch lengths are (loosely) proportional to sequence divergence
+- Coalescence times also depend on population size
+- Described by **coalescent theory**
+
+```{r, out.width = "50%", fig.width = 4, fig.height = 2, dpi = 600, fig.align = "center", echo = FALSE}
+
+my.tree3 <- read.tree(text="((((HapA,HapA),HapC),((HapD,HapD),HapE)),HapF);")
+par(mar=c(1,1,1,1), xpd=TRUE)
+plot(my.tree3)
+```
+
+--- &twocol
+
+## Examples: Dispersal of Barbados anoles
+
+*** =right
+
+```{r, out.width = "70%", dpi = 300, echo = FALSE, fig.align='center'}
+include_graphics("./assets/img/LA_map.png")
+```
+
+*** =left
+
+```{r, out.width = "75%", dpi = 300, echo = FALSE, fig.align='center'}
+include_graphics("./assets/img/Martinique's_anole.png")
+```
+*Anolis roquet, Adamhesim, CC BY 4.0*
+
+```{r, out.width = "40%", dpi = 300, echo = FALSE, fig.align='center'}
+include_graphics("./assets/img/Anolis_extremus-m04.jpg")
+```
+*Anolis extremus, Postdlf, CC BY SA-3.0*
+
+--- &twocol bg:white
+
+## Examples: Barbados anoles
+
+*** =right
+
+```{r, out.width = "70%", dpi = 300, echo = FALSE, fig.align='center'}
+include_graphics("./assets/img/LA_map.png")
+```
+
+*** =left
+
+```{r, out.width = "45%", dpi = 300, echo = FALSE, fig.align='center'}
+include_graphics("./assets/img/roq_ext_MCC.tre.svg")
+```
+
+*Thorpe et al. Mol phylogenet evol 127 (2018): 682-695.*
+
+--- .class bg:white
+
+## Examples: viral outbreaks, Ebola virus in West Africa
+
+*Suchard, et al. Virus evolution 4.1 (2018): vey016.*
+
+```{r, out.width = "85%", dpi = 300, echo = FALSE, fig.align='center'}
+include_graphics("./assets/img/ebola.png")
+```
+
+--- .segue .dark 
+
+## Bayesian phylogenetics
+
+--- &vcenter
+
+## Introductory video 1
+
+https://www.youtube.com/watch?v=IqMzYTOf6H0&ab_channel=DataCamp
+
+--- &vcenter
+
+## Introductory video 2
+
+https://www.youtube.com/watch?v=FmzgKXV53-w&ab_channel=DataCamp
+
+--- .class #id
+
+## The key points
+
+- Bayesian statistics provide a way of describing our prior knowledge of a system as a probability
+- We can then update this `prior probability` by observing some data
+- The updated probability is called the `posterior probability`
+- Prior and posterior probabilities can also take the form of `probability distributions`
+- These allow us to describe a range of probabilites for different values
+- More flexible than a single fixed probability value
+
+--- &twocol bg:white
+
+## Probability distributions
+
+- Imagine you want to predict the number of patients arriving at a hospital in the next week
+- You have information from previous weeks that allow you to make an estimate
+- **But on the Monday...**
+
+*** =left
+
+```{r, out.width = "100%", fig.width = 9, fig.height = 7, dpi = 600, fig.align = "center", echo = FALSE}
+my.dat <- rnorm(5000, 100, 5)
+my.df <- enframe(my.dat)
+
+plot_hist <- ggplot(my.df) +
+  geom_density(aes(x = value), colour="black", fill="coral", show.legend=FALSE) +
+  xlim(50,150) +
+  xlab("Number of patients") +
+  theme_bw(base_size = 25)
+
+plot_hist + ggtitle("Prior probability")
+```
+
+--- &twocol bg:white
+
+## Probability distributions
+
+- Imagine you want to predict the number of patients arriving at a hospital in the next week
+- You have information from previous weeks that allow you to make an estimate
+- **But on the Monday, more patients arrive that you were expecting!**
+
+*** =left
+
+```{r, out.width = "100%", fig.width = 9, fig.height = 7, dpi = 600, fig.align = "center", echo = FALSE}
+plot_hist + ggtitle("Prior probability")
+```
+
+*** =right
+
+```{r, out.width = "100%", fig.width = 9, fig.height = 7, dpi = 600, fig.align = "center", echo = FALSE}
+my.dat <- rnorm(5000, 110, 10)
+my.df <- enframe(my.dat)
+
+plot_hist <- ggplot(my.df) +
+  geom_density(aes(x = value), colour="black", fill="lightblue", show.legend=FALSE) +
+  xlim(50,150) +
+  xlab("Number of patients") +
+  theme_bw(base_size = 25)
+
+plot_hist + ggtitle("Posterior probability")
+```
+
+--- .class #id
+
+## How does this work with phylogenetics?
+
+- The phylogeny is the evolutionary history of the sequences
+- We need a `model` of how the sequences evolve
+- The model has `parameters` that we can assign prior probabilites to
+- The tree `topology`, for example, is a parameter
+- We can then observe some data, in the form of a `sequence alignment`
+- And calculate the `posterior probabilities` of our model parameters
+
+--- .class #id
+
+## An example phylogenetic model
+
+Parameter|Prior
+---------|------
+Substitution rate|estimated rate
+Tr/Tv ratio|estimated ratio
+Base frequencies|estimated frequencies A,T,G,C
+Topology|A set of tree topologies
+Branch lengths|A set of branch lengths
+Population size|A number of individuals
+
+--- .segue .dark 
+
+## Can you compute all those possibilities?
+
+--- .class #id
+
+## Can you compute all those possibilities?
+
+### Example: tree topology
+
+- We would like to calculate posterior probabilities for all possible tree topologies
+- Then select the ones with highest probability
+
+>- How many rooted tree topologies are there?
+  + 3 sequences = 3 trees
+  + 4 sequences = 15 trees
+  + 5 sequences = 105 trees
+  + 10 sequences = 34,459,425 trees
+  + 53 sequences = 2.7E+80 (> total atoms in universe)
+
+>- **Computing all possible topologies for modest number of sequences is computationally impossible**
+
+--- &twocol
+
+## Markov chain Monte Carlo (MCMC) sampling
+
+*** =left
+
+1. Start at a tree
+2. Jump to a nearby tree
+3. Compare posterior probabilities
+4. New tree > previous tree
+  + accept
+5. New tree < previous tree
+  + accept proportional to difference
+6. Repeat (x millions)
+
+*** =right
+
+```{r, out.width = "100%", dpi = 300, echo = FALSE, fig.align='left'}
+include_graphics("./assets/img/uni_trees.svg")
+```
+
+--- .class #id
+
+## MCMC sampling in practise
+
+>- The initial moves are likely to have low probability
+>- This is called `burn in`
+>- We rapidly move to a set of parameter values with similarly high probability
+>- This is called `convergence` or `stationarity`
+>- Sampling the chain at convergence approximates the true posterior distribution
+>- This is called the `posterior sample`
+>- Since the MCMC steps are not independent, we take 1,000s between every sample
+>- And we can verify sufficient sampling using the `effective sample size`
+
+--- &twocol bg:white
+
+## MCMC sampling in practise
+
+Graphically it looks like this
+
+*** =left
+
+```{r, out.width = "100%", fig.width = 5, fig.height = 5, dpi = 600, fig.align = "center", echo = FALSE}
+my.mc <- read.table("data/prlr_burn.txt", header=TRUE)
+par(mar=c(4, 4, 1, 1))
+plot(my.mc$state, my.mc$prlr.rate, type="l", col="blue", xlab="mcmc states", ylab="parameter value")
+```
+
+*** =right
+
+```{r, out.width = "100%", fig.width = 5, fig.height = 5, dpi = 600, fig.align = "center", echo = FALSE}
+my.conv <- read.table("data/mcmc_big_fin.txt", header=TRUE)
+par(mar=c(4, 4, 1, 1))
+hist(my.mc$prlr.rate, col="blue", ylab="Sample frequency", xlab="parameter value", breaks=30, xlim=c(0,0.1), main="")
+```
+
+--- .segue .dark 
+
+## But aren't we also collecting thousands of trees?
+
+--- &twocol bg:white
+
+## Summarising thousands of trees
+
+*** =right
+
+- The *actual* result of the analysis is thousands of trees
+- The posterior sample of trees
+- Typically pick one good one, and annotate with clade posterior probabilities
+- Other parameters like branch lengths are averaged across posterior sample
+
+*** =left
+
+```{r, out.width = "95%", dpi = 300, echo = FALSE, fig.align='left'}
+  include_graphics("./assets/img/panda.svg")
+```
+
+--- .segue .dark 
+
+## Molecular dating
+
+--- &vcenter
+
+## Branch length are typically scaled to genetic distance
+
+```{r, out.width = "100%", dpi = 300, echo = FALSE, fig.align='left'}
+  include_graphics("./assets/img/brown_undated.svg")
+```
+
+--- &vcenter
+
+## Imagine if they could be scaled to time
+
+```{r, out.width = "100%", dpi = 300, echo = FALSE, fig.align='left'}
+  include_graphics("./assets/img/brown_dated.svg")
+```
+
+--- .class bg:white
+
+## Molecular clock hypothesis
+
+- Substitutions seem to occur at an approximately constant rate
+- This means genetic distance is proportional to time
+- Sometimes the relationship breaks down (divergent lineages, saturation, selection)
+- At the population level it generally works well
+
+```{r, out.width = "60%", fig.width = 5, fig.height = 3, dpi = 600, fig.align = "center", echo = FALSE}
+t <- read.table("data/clock.txt", header=TRUE)
+par(mar=c(4,4,1,1))
+plot(jitter(t$time), jitter(t$div, factor=15), pch=19, col="red", xlab="time (years)", ylab="genetic distance")
+abline(lm(t$div ~ t$time))
+```
+
+--- .class #id
+
+## Methods of calibrating the tree
+
+- If we assume a molecular clock, we can use external sources of information to calibrate the tree
+- **Genetic distance per unit time**
+
+### There are 3 parameters of interest:
+
+- `tip ages`
+- `node ages`
+- `substitution rate`
+
+--- .class #id
+
+## The three parameters are interdependent
+
+- Imagine 3 sequences, sampled at different timepoints
+- Genetic distances: A-> B = 0.01; A -> C = 0.015; B -> C = 0.02
+
+>- Substitution rate = 0.02 / 2000 = 1E-05 substitutions per year
+>- Coalescence time B -> C = 0.02 * 1E-05 = 2000 
+>- Age A = (0.02 - 0.15) * 1E-05 = 500
+
+```{r, out.width = "70%", dpi = 300, echo = FALSE, fig.align='center'}
+  include_graphics("./assets/img/mol_dating_exp.svg")
+```
+
+--- .class #id
+
+## We can assign priors on all 3
+
+- **Tip dates**: sampling dates, radiocarbon ages, or unknown
+- **Coalescence times**: population divergence times, fossils, or unknown
+- **Substitution rate**: previous estimates, related species, or unknown
+
+### Within a Bayesian analysis, as long as we have prior information of some of these, we can calculate posterior probabilities of all parameters
+
+--- .class #id
+
+## Example: cave bears
+
+- Radiocarbon dates, estimate sub rate and coalescence times
+
+```{r, out.width = "65%", dpi = 300, echo = FALSE, fig.align='center'}
+  include_graphics("./assets/img/cave_all_dated_sky_MCC.tre.svg")
+```
+
+--- .class #id
+
+## Example: brown bears
+
+- Radiocarbon dates, estimate substitution rate, coalescence times, and an unknown age
+
+```{r, out.width = "65%", dpi = 300, echo = FALSE, fig.align='center'}
+  include_graphics("./assets/img/S6_estimation_new_MCC.tre.svg")
+```
+
+--- .class #id
+
+## Example: giant pandas
+
+- Radiocarbon dates and root node age, estimate sub rate, other coalescence times
+
+```{r, out.width = "70%", dpi = 300, echo = FALSE, fig.align='center'}
+  include_graphics("./assets/img/C_bio6.MCC.tre.svg")
+```
+
+--- .class #id
+
+## Research projects: Phylogenetics
+
+- Population trees
+- Bayesian Phylogenetics
+- Molecular dating
+
+--- &thankyou
+
+## Next time
+
+**Your turn**
+
+
